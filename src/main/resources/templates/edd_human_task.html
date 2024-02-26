@@ -1,0 +1,226 @@
+<#include "extras.ftl" parse=true/>
+<#include "html.ftl" parse=true/>
+<#include "answers.ftl" parse=true/>
+<#assign FEEDBACK_ENABLED = true>
+
+<!-- Select server date and time -->
+<#assign openingTime = .now>
+  
+<@hit contentCss="${applicationResourceUrl}/workfusion-resources/saas/ms/ms.bootstrap.min.css">
+<@script src="${applicationResourceUrl}/workfusion-resources/bootstrap/js/bootstrap-tab.js"/>  
+  
+<@instructions title="<h2>﻿EDD Transactional Analysis | v2.0.51</h2>">
+  <!--- editable content -->
+  <@editable id="__INSTRUCTIONS__"><br><br></@editable>
+</@instructions>
+<@form>
+<#if questions??>
+    <div class="thumbnail">
+    <#list questions as question>
+      <@report question=question includeAll=true/>
+      <div style="position:relative;margin:2px 0px" class="block question">
+           <div style="position:absolute;top:0px;right:0px;background-color:#e0e0e0;padding:1px 4px;border: 1px solid #C0C0C0;border-radius: 0px" class="number">
+                <b>${question_index + 1}</b>
+           </div>
+           <div>
+               <div class="place bg-dark">
+                 <@editable id="__DATA__"><br><br></@editable>
+               </div>
+               <div class="place">
+                 <@answers question=question/>
+               </div>
+            </div>
+      </div>
+      		<!--- Export HT ID and create date time -->
+      	<#if run??>
+			<@input type="hidden" name="ht_id" value="${submissionUUID}" question=question answer=true/>
+			<@input type="hidden" name="ht_create_dt" value="${openingTime?string['yyyy/MM/dd HH:mm:ss']}" question=question answer=true/>
+		</#if>
+    </#list>
+    </div>
+  <script type="text/javascript">
+	const optionalAnswerInput = 'optional answerInput';
+	const requiredAnswerInput = 'required answerInput';
+	const liIdFormat = "li[id*=priority_queue_chzn_o_NUM]";
+    const inputAcNumberId = "input[id*=req_ac_number]";
+    const consultantsDS = "edd_consultants"; // Allowed Data Store Query
+	/**
+		Makes alert_number required if data_source = Actimize or optional if not and disable it.
+	*/
+    $(function() {
+    	$('select[id*=data_source]').change(function() {
+    		var alertNumberElement = $('input[id*=alert_number]');
+
+    		if('Actimize' === this.value) {
+    			makeElementMandatory(alertNumberElement, true);
+    			disableElement(alertNumberElement, false);
+                showAllListItems();
+                hideListItems(6,7,8);	
+    		} else if ('Manual (AdHoc Request)' === this.value) {
+    			makeElementMandatory(alertNumberElement, false);
+    			disableElement(alertNumberElement, true);
+                showAllListItems();
+                hideListItems(1, 2, 3, 4, 5);           
+    		} else {
+				makeElementMandatory(alertNumberElement, false);
+				disableElement(alertNumberElement, false);
+              	showAllListItems();
+			}
+    	})
+    });
+
+
+    /**
+    	On Request Number focus lost.
+    */
+     $(function() {
+    	$('input[id*=req_ac_number]').blur(function() {
+    		validateRequestorNumber(this);
+    	})
+    });
+
+      /**
+    	On Alert Number focus lost.
+    */
+     $(function() {
+    	$('input[id*=alert_number]').blur(function() {
+    		validateAlertNumber(this);
+    	})
+    });
+
+
+    /**
+		Makes input element mandatory if mandatoryFlag is true overwise optional.
+    */
+    function makeElementMandatory(element, mandatoryFlag) {
+		var alertNumber = $("span:contains('Alert Number')");
+
+		if (mandatoryFlag) {
+			element.removeClass(optionalAnswerInput);
+			element.addClass(requiredAnswerInput);
+
+			alertNumber.append('<span class="required">required</span>');
+		} else {
+			element.removeClass(requiredAnswerInput);
+			element.addClass(optionalAnswerInput);
+
+			alertNumber.find("span").remove();
+		}
+    };
+
+    /**
+    	Makes input element disabled if disableFlag is true overwise enable.
+    */
+    function disableElement(element, disableFlag) {
+    	if (disableFlag) {
+    		element.val('');
+    	}
+    	element.prop('disabled', disableFlag);
+    };
+
+    /**
+    	Validates RequestorNumber. Starts with single A or C ignoring case and contains digits.
+    	Valid cases:
+    	- A1234;
+    	- a1234;
+    	- C1234;
+    	- c1234.
+    	Invalid cases:
+    	- 1234;
+    	- AA123;
+    	- D1234;
+    	- D.
+    	Cleans input and mark it with red borders on validation failure. 
+        After that validate Requestor Number from Data Store.
+    */
+    function validateRequestorNumber(requestorNumber) {
+    	var reqNumberAttr = $('input[id*=req_ac_number]');
+    	var requestorNumberPattern = new RegExp('^[a|A|c|C][0-9]+$');
+		// First of all check if Requestor number matches RegExp
+    	isPopulated = validateElement(requestorNumberPattern, reqNumberAttr, requestorNumber);
+        // The second - validation directly from Data Store (only if the requester is filled out correctly) 
+        if(isPopulated) validateConsultantAcNumberFromDS();
+    };
+
+    /**
+		Validates AlertNumber. Contains digits, letters and characters.
+    	Valid case: AML_CDD_01_10391190.
+    	Invalid cases: 
+    	- Joseph;
+    	- 858596.
+    	Cleans input and mark it with red borders on validation failure.
+	*/
+	function validateAlertNumber(alertNumber) {
+		var alertNumberAttr = $('input[id*=alert_number]');
+		var alertNumberPattern = new RegExp('(?=.*[0-9])(?=.*[A-Za-z])');
+
+		validateElement(alertNumberPattern, alertNumberAttr, alertNumber);
+	}
+
+    function validateElement(elementPattern, elementAttr, element) {
+    	if (elementPattern.test(element.value)) {
+    		elementAttr.css('border-color', '');
+          return true;
+    	} else {
+    		elementAttr.val('');
+    		elementAttr.css('border-color', 'red');
+           return false;
+    	}
+    };
+    
+    /**
+      Requestor A/C Number validation directly from Data store. 
+      Avoid the manual task submission in case of non-existent Consultant A/C Number.
+      Note that allowed Data Store Query shoudl be added with name from var 'consultantsDS':
+         Name = 'edd_consultants'
+         Data Store = 'edd_consultants'
+         Query = 'SELECT count(*) FROM @this WHERE UPPER(ac_number)=:ac_number'
+    */
+	function validateConsultantAcNumberFromDS() {
+    	var acNumber = $(inputAcNumberId).val().trim().toUpperCase(); // search consultant in upper case
+    	var hitId = $("input[name=hitId]").val();
+    	$.ajax({
+        	dataType: "json",
+        	url: "/workfusion/public/v2/datastores/executeNamedQuery?queryName=" + consultantsDS + "&nativeId=" +
+            	hitId + "&parameters=" + encodeURIComponent("{ac_number:'" + acNumber + "'}"),
+        	success: function(resp) {
+            	if (typeof resp === 'object') {
+                	var counter = parseInt(resp[0]);
+                	if (counter == 0) {
+                      	alert("Requestor with A/C Number '" + acNumber + "' is not found in '" + consultantsDS + "' Data Store");
+                    	$(inputAcNumberId).val(''); // prevent submit
+                    	$(inputAcNumberId).css('border-color', 'red');
+                	} else if(counter == 1) {
+                    	console.log("Requestor with A/C Number '" + acNumber + "' is found");
+                	} else { // acNumber is not unique
+                    	alert("Warning! Requestor with A/C Number '" + acNumber + "' is present in the  '" + consultantsDS + 
+                              "' Data Store more than once.\nTo avoid an ambiguous outcome please make sure this is corrected.");
+                      $(inputAcNumberId).css('border-color', 'yellow');
+                    }
+            	}
+        	},
+        	error: function(resp) {
+            	colsole.log("Allowed Data Store Query issue (Ajax error)");
+        	}
+    	});
+	}
+
+   /**
+	* Show or hide the list item by number. Note what is tied to a specific 'liIdFormat' id
+	*/
+    function displayListItem(flag, nums){
+      nums.forEach(num =>  {
+        let li = $(liIdFormat.replace('NUM', num));
+        flag? li.show() : li.hide(); 
+      });      
+    }
+    
+    function showListItems(...nums){ displayListItem(true, nums);  }
+    function hideListItems(...nums){ displayListItem(false, nums); }
+    function showAllListItems(){ showListItems(1,2,3,4,5,6,7,8); }
+    
+</script>
+</#if>
+<@submit text="Submit Request" />
+</@form>
+</@hit>
