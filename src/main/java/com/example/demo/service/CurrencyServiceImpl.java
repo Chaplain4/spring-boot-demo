@@ -16,19 +16,25 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Autowired
     CurrencyRepository repository;
 
-//    @Override
-//    public List<CurrencyDto> getAllCurrencies() {
-//        List<CurrencyDto> result = new ArrayList<>();
-//        List<Currency> l = repository.findAll();
-//        l.forEach(Currency -> {
-//            CurrencyDto currencyDto =;
-//        });
-//    }
-
     @Override
     public List<CurrencyDto> getAllCurrencies() {
-        return null;
+        List<CurrencyDto> result = new ArrayList<>();
+        List<Currency> l = repository.findAll();
+        l.forEach(Currency -> {
+            CurrencyDto currencyDto = new CurrencyDto();
+            currencyDto.setName(Currency.getName());
+            currencyDto.setNumCode(Currency.getNumCode());
+            currencyDto.setDailyTs(Currency.getDailyTs());
+            currencyDto.setCharCode(Currency.getCharCode());
+            currencyDto.setUpdatedTs(Currency.getUpdatedTs());
+            currencyDto.setRate(Currency.getRate());
+            currencyDto.setScale(Currency.getScale());
+            currencyDto.setScaleOneRate(Currency.getScale()/Currency.getRate());
+            result.add(currencyDto);
+        });
+        return result;
     }
+
 
     @Override
     public List<CurrencyDto> getForceAllCurrencies() {
@@ -37,11 +43,14 @@ public class CurrencyServiceImpl implements CurrencyService{
 
     @Override
     public CurrencyDto getCurrencyByCharCode(String charCode) {
+        List<CurrencyDto> list = getAllCurrencies();
+        for (CurrencyDto currencyDto : list) {
+            if (currencyDto.getCharCode().equals(charCode)) {
+                return  currencyDto;
+            }
+        }
         return null;
     }
 
-    //call service
-//    private List<Currency> load() {
-//        return XMLCurrencyParser.getAllCurrencies();
-//    }
+
 }

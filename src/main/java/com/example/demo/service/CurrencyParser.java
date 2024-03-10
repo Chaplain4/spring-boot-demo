@@ -135,11 +135,11 @@ public class CurrencyParser {
                 }
 
                 String result = sb.toString();
-                System.out.println(result);
+                //System.out.println(result);
 
                 // 1st get exchange  e.g. Date "03/05/2024"
                 String date = result.substring(result.indexOf("Date=") + 6, result.indexOf("Date=") + 16);
-                System.out.println(date);
+                //System.out.println(date);
 
                 // 2nd for each Currency
                 for (String curr : result.split("<Currency")) {
@@ -159,7 +159,7 @@ public class CurrencyParser {
                     SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy"); // , Locale.ENGLISH
                     long mils = formatter.parse(date.replace("/", "-")).getTime();
                     currency.setDailyTs(new Timestamp(mils));
-
+                    System.out.println(currency);
 
                 }
 
