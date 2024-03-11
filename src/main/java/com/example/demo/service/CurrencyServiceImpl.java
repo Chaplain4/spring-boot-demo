@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CurrencyDto;
-import com.example.demo.dto.StudentDto;
 import com.example.demo.model.Currency;
 import com.example.demo.repository.CurrencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +28,14 @@ public class CurrencyServiceImpl implements CurrencyService{
             currencyDto.setUpdatedTs(Currency.getUpdatedTs());
             currencyDto.setRate(Currency.getRate());
             currencyDto.setScale(Currency.getScale());
-            currencyDto.setScaleOneRate(Currency.getScale()/Currency.getRate());
+            currencyDto.setScaleOneRate(Currency.getRate()/Currency.getScale());
             result.add(currencyDto);
         });
         return result;
+    }
+
+    public void saveAllCurrencies(){
+        repository.saveAll(CurrencyParser.getAllCurrencies());
     }
 
 

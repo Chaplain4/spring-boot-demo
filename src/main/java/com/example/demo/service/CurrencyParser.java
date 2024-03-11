@@ -107,11 +107,8 @@ public class CurrencyParser {
         }
         return "0.0";
     }
-
-
     public static void main(String[] args) throws IOException, URISyntaxException {
-//        String val = getCurrency("840");
-//        System.out.println(val);
+
         getAllCurrencies();
     }
 
@@ -142,6 +139,7 @@ public class CurrencyParser {
                 //System.out.println(date);
 
                 // 2nd for each Currency
+                List<Currency> currencies = new ArrayList<>();
                 for (String curr : result.split("<Currency")) {
                     if (!curr.startsWith(" Id="))
                         continue;
@@ -153,17 +151,15 @@ public class CurrencyParser {
                     Currency currency = xmlMapper.readValue(target, Currency.class);
 
 
-
                     // 3rd populate dates
                     currency.setUpdatedTs(new Timestamp(System.currentTimeMillis()));
                     SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy"); // , Locale.ENGLISH
                     long mils = formatter.parse(date.replace("/", "-")).getTime();
                     currency.setDailyTs(new Timestamp(mils));
-                    System.out.println(currency);
+                    currencies.add(currency);
 
                 }
-
-
+                return currencies;
             } finally {
                 if (reader != null) {
                     try {
@@ -177,9 +173,6 @@ public class CurrencyParser {
             System.out.println("Currencies parsing error : " + e.getCause());
             throw new RuntimeException("Currencies parsing error", e);
         }
-
-
-        return null;
     }
 }
 

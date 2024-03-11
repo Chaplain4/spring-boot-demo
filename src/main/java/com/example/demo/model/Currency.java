@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
 
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "currencies")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode
 public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +22,7 @@ public class Currency {
     @JsonProperty(value = "NumCode")
     private Integer numCode;
 
-    @Column(name = "char_code")
+    @Column(name = "char_code", nullable = false, unique = true)
     @JsonProperty(value = "CharCode")
     private String charCode;
 
