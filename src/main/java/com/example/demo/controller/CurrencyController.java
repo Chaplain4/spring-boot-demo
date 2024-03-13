@@ -39,11 +39,11 @@ public class CurrencyController {
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    @Scheduled (fixedRate = 5000)
-    public void test(){
-        System.out.println("TEST");
-    }
+//    @GetMapping("/test")
+//    @Scheduled (fixedRate = 5000)
+//    public void test(){
+//        System.out.println("TEST");
+//    }
 
     @GetMapping("/get_by_charcode/{charcode}")
     public ResponseEntity<CurrencyDto> getAll(@PathVariable(name = "charcode") String charcode){

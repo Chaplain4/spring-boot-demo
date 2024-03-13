@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>User Registration</title>
+    <style type="text/css">
+        label {
+            display: inline-block;
+            width: 200px;
+            margin: 5px;
+            text-align: left;
+        }
+        input[type=text], input[type=password], select {
+            display: inline-block;
+            width: 200px;
+        }
+        input[type=radio] {
+            margin-left: 45px;
+        }
+        input[type=checkbox] {
+            margin-right: 190px;
+        }
+        button {
+            padding: 5px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <th>name</th>
+        <th>email</th>
+        <th>password</th>
+        <th>gender</th>
+        <th>profession</th>
+        <th>married</th>
+        <th>note</th>
+       <th>DELETE</th>
+        <th>EDIT</th>
+    </tr>
+    <tr th:each="client,iterStat : ${clients}" th:class="${iterStat.odd}? 'odd'">
+        <td th:text="${client.name}"></td>
+        <td th:text="${client.email}"></td>
+        <td th:text="${client.password}"></td>
+        <td th:text="${client.gender}"></td>
+        <td th:text="${client.profession}"></td>
+        <td th:text="${client.married}"></td>
+        <td th:text="${client.note}"></td>
+        <td>
+            <form th:action="@{'/clients/delete/' + ${client.email}}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+        <td>
+            <a th:href="@{'/clients/edit/' + ${client.email}}">Edit</a>
+        </td>
+    </tr>
+</table>
+<div align="center">
+    <h1>User Registration</h1>
+
+    <form action="#" th:action="@{/clients/register}" method="post" th:object="${client}">
+        <label>Full name:</label>
+        <input type="text" th:field="*{name}" th:default="${client.name}"/><br/>
+
+        <label>E-mail:</label>
+        <input type="text" th:field="*{email}" th:default="${client.email}"/><br/>
+
+        <label>Password:</label>
+        <input type="password" th:field="*{password}" th:default="${client.password}"/><br/>
+
+        <label>Birthday (yyyy-mm-dd):</label>
+        <input type="date" th:field="*{birthday}" th:default="${client.birthday}"/><br/>
+
+        <label>Gender:</label>
+        <input type="radio" th:field="*{gender}" value="Male" />Male
+        <input type="radio" th:field="*{gender}" value="Female" />Female<br/>
+
+        <label>Profession:</label>
+        <select th:field="*{profession}" th:default="${client.profession}">
+            <option th:each="p : ${listProfession}" th:value="${p}" th:text="${p}" />
+        </select>
+        <br/>
+
+        <label>Married?</label>
+        <input type="checkbox" th:field="*{married}" /><br/>
+
+        <label>Note:</label>
+        <textarea rows="5" cols="25" th:field="*{note}" th:default="${client.note}"></textarea>
+        <br/>
+
+        <button type="submit">Edit</button>
+    </form>
+</div>
+</body>
+</html>

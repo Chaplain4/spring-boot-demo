@@ -11,7 +11,7 @@ public class Job {
     private CurrencyService currencyService;
 
 
-    @Scheduled(fixedRate = 5000)
+  //  @Scheduled(fixedRate = 5000)
     public void test(){
         currencyService.saveAllCurrencies();
     }
