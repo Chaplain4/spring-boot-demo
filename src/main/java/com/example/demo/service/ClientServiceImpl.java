@@ -3,7 +3,11 @@ package com.example.demo.service;
 import com.example.demo.model.Client;
 import com.example.demo.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,11 +38,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Modifying
+
     public boolean saveOrUpdateClient(Client client) {
         try {
-            System.out.println(client.getId());
-            cr.deleteById(client.getId());
-            cr.save(client);
+            cr.saveAndFlush(client);
             return true;
         } catch (Throwable t) {
             t.printStackTrace();

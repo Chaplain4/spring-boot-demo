@@ -10,16 +10,20 @@
             margin: 5px;
             text-align: left;
         }
+
         input[type=text], input[type=password], select {
             display: inline-block;
             width: 200px;
         }
+
         input[type=radio] {
             margin-left: 45px;
         }
+
         input[type=checkbox] {
             margin-right: 190px;
         }
+
         button {
             padding: 5px;
             margin: 10px;
@@ -36,7 +40,7 @@
         <th>profession</th>
         <th>married</th>
         <th>note</th>
-       <th>DELETE</th>
+        <th>DELETE</th>
         <th>EDIT</th>
     </tr>
     <tr th:each="client,iterStat : ${clients}" th:class="${iterStat.odd}? 'odd'">
@@ -48,12 +52,14 @@
         <td th:text="${client.married}"></td>
         <td th:text="${client.note}"></td>
         <td>
-            <form th:action="@{'/clients/delete/' + ${client.email}}" method="post">
+            <form th:action="@{'/clients/delete/' + ${client.id}}" method="post">
                 <button type="submit">Delete</button>
             </form>
         </td>
         <td>
-            <a th:href="@{'/clients/edit/' + ${client.email}}">Edit</a>
+            <form th:action="@{'/clients/edit/' + ${client.id}}" method="get">
+                <button type="submit">Edit</button>
+            </form>
         </td>
     </tr>
 </table>
@@ -62,33 +68,36 @@
 
     <form action="#" th:action="@{/clients/register}" method="post" th:object="${client}">
         <label>Full name:</label>
-        <input type="text" th:field="*{name}" th:default="${client.name}"/><br/>
+        <input type="text" th:field="*{name}"/><br/>
 
         <label>E-mail:</label>
-        <input type="text" th:field="*{email}" th:default="${client.email}"/><br/>
+        <input type="text" th:field="*{email}"/><br/>
 
         <label>Password:</label>
-        <input type="password" th:field="*{password}" th:default="${client.password}"/><br/>
+        <input type="password" th:field="*{password}"/><br/>
 
         <label>Birthday (yyyy-mm-dd):</label>
-        <input type="date" th:field="*{birthday}" th:default="${client.birthday}"/><br/>
+        <input type="date" th:field="*{birthday}"/><br/>
 
         <label>Gender:</label>
-        <input type="radio" th:field="*{gender}" value="Male" />Male
-        <input type="radio" th:field="*{gender}" value="Female" />Female<br/>
+        <input type="radio" th:field="*{gender}" value="Male"/>Male
+        <input type="radio" th:field="*{gender}" value="Female"/>Female<br/>
 
         <label>Profession:</label>
-        <select th:field="*{profession}" th:default="${client.profession}">
-            <option th:each="p : ${listProfession}" th:value="${p}" th:text="${p}" />
+        <select th:field="*{profession}">
+            <option th:each="p : ${listProfession}" th:value="${p}" th:text="${p}"/>
         </select>
         <br/>
 
         <label>Married?</label>
-        <input type="checkbox" th:field="*{married}" /><br/>
+        <input type="checkbox" th:field="*{married}"/><br/>
 
         <label>Note:</label>
-        <textarea rows="5" cols="25" th:field="*{note}" th:default="${client.note}"></textarea>
+        <textarea rows="5" cols="25" th:field="*{note}"></textarea>
         <br/>
+
+
+        <input type="hidden" th:field="*{id}"/><br/>
 
         <button type="submit">Edit</button>
     </form>

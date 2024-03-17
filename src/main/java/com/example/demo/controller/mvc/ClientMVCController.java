@@ -45,8 +45,31 @@ public class ClientMVCController {
         return "register_form";
     }
 
+
+
     @PostMapping("/register")
     public String submitForm(@ModelAttribute("client") Client client) {
+        cs.createClient(client);
+        System.out.println(client);
+        return "register_success";
+    }
+
+    @GetMapping("/edit")
+    public String showEditForm(Model model) {
+        logger.info("showForm started");
+        Client client = new Client();
+        model.addAttribute("client", client);
+        logger.info("client added");
+        model.addAttribute("clients", cs.getAllClients());
+        logger.info("client {} added", client);
+        List<String> listProfession = Arrays.asList("Developer", "Tester", "Architect");
+        model.addAttribute("listProfession", listProfession);
+        return "edit_form";
+    }
+
+    @PostMapping("/edit")
+    public String submitEditForm(@ModelAttribute("client") Client client) {
+        System.out.println(client);
         cs.saveOrUpdateClient(client);
         System.out.println(client);
         return "register_success";
@@ -64,7 +87,7 @@ public class ClientMVCController {
         List<String> listProfession = Arrays.asList("Developer", "Tester", "Architect");
         model.addAttribute("listProfession", listProfession);
         model.addAttribute("client", cs.getClientById(Integer.parseInt(id)));
-        cs.deleteClientById(Integer.parseInt(id));
+        //cs.deleteClientById(Integer.parseInt(id));
         return "edit_form";
     }
 
