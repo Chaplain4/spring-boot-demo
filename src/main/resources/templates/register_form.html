@@ -48,12 +48,12 @@
         <td th:text="${client.married}"></td>
         <td th:text="${client.note}"></td>
         <td>
-            <form th:action="@{'/clients/delete/' + ${client.email}}" method="post">
+            <form th:action="@{'/clients/delete/' + ${client.id}}" method="post">
                 <button type="submit">Delete</button>
             </form>
         </td>
         <td>
-            <form th:action="@{'/clients/edit/' + ${client.email}}" method="get">
+            <form th:action="@{'/clients/edit/' + ${client.id}}" method="get">
                 <button type="submit">Edit</button>
             </form>
         </td>
