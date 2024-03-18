@@ -1,35 +1,33 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Client;
-import com.example.demo.repository.ClientRepository;
+import com.example.demo.model.Forecast;
+import com.example.demo.repository.ForecastRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class ClientServiceImpl implements ClientService {
+public class ForecastServiceImpl implements ForecastService {
+
     @Autowired
-    ClientRepository cr;
+    ForecastRepository fr;
 
     @Override
-    public List<Client> getAllClients() {
-        return cr.findAll();
+    public List<Forecast> getAllForecasts() {
+        return fr.findAll();
     }
 
     @Override
-    public Client getClientById(int id) {
-        return cr.getReferenceById(id);
+    public Forecast getForecastById(int id) {
+        return fr.getReferenceById(id);
     }
 
     @Override
-    public boolean deleteClientById(int id) {
+    public boolean deleteForecastById(int id) {
         try {
-            cr.deleteById(id);
+            fr.deleteById(id);
             return true;
         } catch (Throwable t) {
             t.printStackTrace();
@@ -39,9 +37,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Modifying
-    public boolean saveOrUpdateClient(Client client) {
+    public boolean saveOrUpdateForecast(Forecast forecast) {
         try {
-            cr.saveAndFlush(client);
+            fr.saveAndFlush(forecast);
             return true;
         } catch (Throwable t) {
             t.printStackTrace();
@@ -50,9 +48,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean createClient(Client client) {
+    public boolean createForecast(Forecast forecast) {
         try {
-            cr.save(client);
+            fr.save(forecast);
             return true;
         } catch (Throwable t) {
             t.printStackTrace();

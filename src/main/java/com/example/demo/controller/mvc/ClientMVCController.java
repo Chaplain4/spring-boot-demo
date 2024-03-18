@@ -23,14 +23,6 @@ public class ClientMVCController {
 
     @Autowired
     private ClientService cs;
-//    private static List<Client> clients = new ArrayList<>();
-//
-//    static {
-//        Client client1 = new Client(1,"Ivan", "Ivan@gmail.com", "132", "Male", "No notes", false, new Date(1991, 10, 1), "Tester");
-//        Client client2 = new Client(2,"Alex", "Alex@gmail.com", "132", "Male", "No notes", false, new Date(1984, 10, 11), "Developer");
-//        clients.add(client1);
-//        clients.add(client2);
-//    }
 
     @GetMapping("/register")
     public String showForm(Model model) {
